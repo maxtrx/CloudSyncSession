@@ -313,9 +313,11 @@ struct ErrorMiddleware: Middleware {
 
             // First, nil out all keys in case any keys in the newly resolved record are nil,
             // we don't want those to carry over into the final resolved copy
-            serverRecord.removeAllFields()
-
-            serverRecord.copyFields(from: resolvedRecord)
+            if #available(iOS 15, watchOS 8, *) {
+                serverRecord.removeAllFields()
+                
+                serverRecord.copyFields(from: resolvedRecord)
+            }
         }
 
         return serverRecord
@@ -331,6 +333,7 @@ struct ErrorMiddleware: Middleware {
 }
 
 internal extension CKRecord {
+    @available(iOS 15, watchOS 8, *)
     func removeAllFields() {
         let encryptedKeys = Set(encryptedValues.allKeys())
 
@@ -343,6 +346,7 @@ internal extension CKRecord {
         }
     }
 
+    @available(iOS 15, watchOS 8, *)
     func copyFields(from otherRecord: CKRecord) {
         let encryptedKeys = Set(otherRecord.encryptedValues.allKeys())
 

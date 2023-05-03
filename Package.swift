@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "CloudSyncSession",
     platforms: [
-        .iOS(.v15),
-        .watchOS(.v8),
+        .iOS(.v13),
+        .watchOS(.v6),
         .macOS(.v12),
     ],
     products: [

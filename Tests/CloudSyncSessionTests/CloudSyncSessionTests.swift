@@ -475,7 +475,7 @@ final class CloudSyncSessionTests: XCTestCase {
     }
 
     // MARK: - CKRecord Extensions
-
+    @available(iOS 15, watchOS 8, *)
     func testCKRecordRemoveAllFields() {
         let record = makeTestRecord()
         record["hello"] = "world"
@@ -487,6 +487,7 @@ final class CloudSyncSessionTests: XCTestCase {
         XCTAssertEqual(record["secrets"] as! String?, nil)
     }
 
+    @available(iOS 15, watchOS 8, *)
     func testCKRecordCopyFields() {
         let recordA = makeTestRecord()
         recordA["hello"] = "world"
