@@ -43,7 +43,7 @@ final class SyncStateTests: XCTestCase {
 
         state = state.reduce(event: .doWork(.modify(ModifyOperation(records: [], recordIDsToDelete: [], checkpointID: nil, userInfo: nil))))
         state = state.reduce(event: .doWork(.modify(ModifyOperation(records: [], recordIDsToDelete: [], checkpointID: nil, userInfo: nil))))
-        state = state.reduce(event: .doWork(.fetch(FetchLatestChangesOperation(changeToken: nil))))
+        state = state.reduce(event: .doWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: nil))))
         state = state.reduce(event: .doWork(.modify(ModifyOperation(records: [], recordIDsToDelete: [], checkpointID: nil, userInfo: nil))))
 
         state = state.reduce(event: .accountStatusChanged(.available))
@@ -55,7 +55,7 @@ final class SyncStateTests: XCTestCase {
         XCTAssertEqual(state.operationMode, SyncState.OperationMode.modify)
 
         switch state.currentWork {
-        case .fetch, .createZone, .createSubscription, nil:
+        case .fetchLatestChanges, .createZone, .createSubscription, nil:
             XCTFail()
         case .modify:
             break
@@ -65,7 +65,7 @@ final class SyncStateTests: XCTestCase {
     func testStartsFetchingIfNoModifications() {
         var state = SyncState()
 
-        state = state.reduce(event: .doWork(.fetch(FetchLatestChangesOperation(changeToken: nil))))
+        state = state.reduce(event: .doWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: nil))))
 
         state = state.reduce(event: .accountStatusChanged(.available))
         let createZoneWork = SyncWork.createZone(CreateZoneOperation(zoneID: testZoneID))
@@ -78,7 +78,7 @@ final class SyncStateTests: XCTestCase {
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:
             XCTFail()
-        case .fetch:
+        case .fetchLatestChanges:
             break
         }
     }
@@ -101,7 +101,7 @@ final class SyncStateTests: XCTestCase {
     func testStartsFetchingAfterModifications() {
         var state = SyncState()
 
-        state = state.reduce(event: .doWork(.fetch(FetchLatestChangesOperation(changeToken: nil))))
+        state = state.reduce(event: .doWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: nil))))
 
         let modifyWork = SyncWork.modify(ModifyOperation(records: [], recordIDsToDelete: [], checkpointID: nil, userInfo: nil))
         state = state.reduce(event: .doWork(modifyWork))
@@ -118,7 +118,7 @@ final class SyncStateTests: XCTestCase {
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:
             XCTFail()
-        case .fetch:
+        case .fetchLatestChanges:
             break
         }
     }
@@ -126,7 +126,7 @@ final class SyncStateTests: XCTestCase {
     func testPopWork() {
         var state = SyncState()
 
-        let work = SyncWork.fetch(FetchLatestChangesOperation(changeToken: nil))
+        let work = SyncWork.fetchLatestChanges(FetchLatestChangesOperation(changeToken: nil))
         state = state.reduce(event: .doWork(work))
         state.popWork(work: work)
 
@@ -136,7 +136,7 @@ final class SyncStateTests: XCTestCase {
     func testPopRetriedWork() {
         var state = SyncState()
 
-        var work = SyncWork.fetch(FetchLatestChangesOperation(changeToken: nil))
+        var work = SyncWork.fetchLatestChanges(FetchLatestChangesOperation(changeToken: nil))
         work = work.retried
         state = state.reduce(event: .doWork(work))
         state.popWork(work: work)

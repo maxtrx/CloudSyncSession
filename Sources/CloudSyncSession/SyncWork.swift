@@ -5,13 +5,13 @@ public let maxRecommendedRecordsPerOperation = 400
 public enum SyncWork: Identifiable {
     public enum Result {
         case modify(ModifyOperation.Response)
-        case fetch(FetchLatestChangesOperation.Response)
+        case fetchLatestChanges(FetchLatestChangesOperation.Response)
         case createZone(Bool)
         case createSubscription(Bool)
     }
 
     case modify(ModifyOperation)
-    case fetch(FetchLatestChangesOperation)
+    case fetchLatestChanges(FetchLatestChangesOperation)
     case createZone(CreateZoneOperation)
     case createSubscription(CreateSubscriptionOperation)
 
@@ -19,7 +19,7 @@ public enum SyncWork: Identifiable {
         switch self {
         case let .modify(operation):
             return operation.id
-        case let .fetch(operation):
+        case let .fetchLatestChanges(operation):
             return operation.id
         case let .createZone(operation):
             return operation.id
@@ -32,7 +32,7 @@ public enum SyncWork: Identifiable {
         switch self {
         case let .modify(operation):
             return operation.retryCount
-        case let .fetch(operation):
+        case let .fetchLatestChanges(operation):
             return operation.retryCount
         case let .createZone(operation):
             return operation.retryCount
@@ -47,10 +47,10 @@ public enum SyncWork: Identifiable {
             operation.retryCount += 1
 
             return .modify(operation)
-        case var .fetch(operation):
+        case var .fetchLatestChanges(operation):
             operation.retryCount += 1
 
-            return .fetch(operation)
+            return .fetchLatestChanges(operation)
         case var .createZone(operation):
             operation.retryCount += 1
 
@@ -75,7 +75,7 @@ public enum SyncWork: Identifiable {
         switch self {
         case let .modify(operation):
             return "Modify with \(operation.records.count) records to save and \(operation.recordIDsToDelete.count) to delete"
-        case .fetch:
+        case .fetchLatestChanges:
             return "Fetch"
         case .createZone:
             return "Create zone"
@@ -87,6 +87,23 @@ public enum SyncWork: Identifiable {
 
 protocol SyncOperation {
     var retryCount: Int { get set }
+}
+
+public struct FetchRecordsOperation: Identifiable, SyncOperation {
+    public struct Response {
+        public let records: [CKRecord]
+    }
+
+    public let id = UUID()
+    public let resultLimit: Int
+    public let query: CKQuery
+
+    var retryCount: Int = 0
+
+    public init(resultLimit: Int, query: CKQuery) {
+        self.resultLimit = resultLimit
+        self.query = query
+    }
 }
 
 public struct FetchLatestChangesOperation: Identifiable, SyncOperation {

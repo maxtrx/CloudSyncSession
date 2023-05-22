@@ -469,7 +469,7 @@ final class CloudSyncSessionTests: XCTestCase {
             .store(in: &tasks)
 
         let operation = FetchLatestChangesOperation(changeToken: nil)
-        session.dispatch(event: .doWork(.fetch(operation)))
+        session.dispatch(event: .doWork(.fetchLatestChanges(operation)))
 
         wait(for: [expectation], timeout: 1)
     }

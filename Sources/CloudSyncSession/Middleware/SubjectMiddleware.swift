@@ -8,8 +8,8 @@ struct SubjectMiddleware: Middleware {
             switch event {
             case let .workSuccess(work, result):
                 switch result {
-                case let .fetch(response):
-                    if case let .fetch(operation) = work {
+                case let .fetchLatestChanges(response):
+                    if case let .fetchLatestChanges(operation) = work {
                         session.fetchWorkCompletedSubject.send((operation, response))
                     }
                 case let .modify(response):

@@ -142,7 +142,7 @@ public struct SyncState {
             }
         case .fetch:
             if let operation = fetchQueue.first {
-                return SyncWork.fetch(operation)
+                return SyncWork.fetchLatestChanges(operation)
             }
         case .createZone:
             if let operation = createZoneQueue.first {
@@ -171,7 +171,7 @@ public struct SyncState {
     /// Add work to the end of the appropriate queue
     internal mutating func pushWork(_ work: SyncWork) {
         switch work {
-        case let .fetch(operation):
+        case let .fetchLatestChanges(operation):
             fetchQueue.append(operation)
         case let .modify(operation):
             modifyQueue.append(operation)
@@ -185,7 +185,7 @@ public struct SyncState {
     /// Add work to the beginning of the appropriate queue.
     internal mutating func prioritizeWork(_ work: SyncWork) {
         switch work {
-        case let .fetch(operation):
+        case let .fetchLatestChanges(operation):
             fetchQueue = [operation] + fetchQueue
         case let .modify(operation):
             modifyQueue = [operation] + modifyQueue
@@ -199,7 +199,7 @@ public struct SyncState {
     /// Remove work from the corresponding queue.
     internal mutating func popWork(work: SyncWork) {
         switch work {
-        case let .fetch(operation):
+        case let .fetchLatestChanges(operation):
             fetchQueue = fetchQueue.filter { $0.id != operation.id }
         case let .modify(operation):
             modifyQueue = modifyQueue.filter { $0.id != operation.id }
@@ -253,9 +253,9 @@ public struct SyncState {
             state.popWork(work: work)
 
             switch result {
-            case let .fetch(response):
+            case let .fetchLatestChanges(response):
                 if response.hasMore {
-                    state.prioritizeWork(.fetch(FetchLatestChangesOperation(changeToken: response.changeToken)))
+                    state.prioritizeWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: response.changeToken)))
                 }
             case let .createZone(didCreateZone):
                 state.hasCreatedZone = didCreateZone

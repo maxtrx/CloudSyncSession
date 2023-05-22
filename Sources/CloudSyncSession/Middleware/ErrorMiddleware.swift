@@ -94,16 +94,16 @@ struct ErrorMiddleware: Middleware {
                 }
 
                 switch work {
-                case var .fetch(modifiedOperation):
+                case var .fetchLatestChanges(modifiedOperation):
                     modifiedOperation.changeToken = resolveExpiredChangeToken()
 
-                    return .retry(.fetch(modifiedOperation), error, suggestedInterval)
+                    return .retry(.fetchLatestChanges(modifiedOperation), error, suggestedInterval)
                 default:
                     return .halt(error)
                 }
             case .partialFailure:
                 switch work {
-                case .fetch:
+                case .fetchLatestChanges:
                     // Supported fetch partial failures: changeTokenExpired
 
                     guard let partialErrors = ckError.partialErrorsByItemID else {

@@ -100,7 +100,7 @@ public class CloudSyncSession {
             return
         }
 
-        dispatch(event: .doWork(.fetch(operation)))
+        dispatch(event: .doWork(.fetchLatestChanges(operation)))
     }
 
     /// Queue a modify operation.
