@@ -31,7 +31,7 @@ public class CloudSyncSession {
     public let eventsPublisher = CurrentValueSubject<SyncEvent?, Never>(nil)
 
     /// A Combine subject that publishes fetch work that has completed.
-    public let fetchWorkCompletedSubject = PassthroughSubject<(FetchOperation, FetchOperation.Response), Never>()
+    public let fetchWorkCompletedSubject = PassthroughSubject<(FetchLatestChangesOperation, FetchLatestChangesOperation.Response), Never>()
 
     /// A Combine subject that publishes modify work that has completed.
     public let modifyWorkCompletedSubject = PassthroughSubject<(ModifyOperation, ModifyOperation.Response), Never>()
@@ -95,7 +95,7 @@ public class CloudSyncSession {
     }
 
     /// Queue a fetch operation.
-    public func fetch(_ operation: FetchOperation) {
+    public func fetch(_ operation: FetchLatestChangesOperation) {
         guard state.fetchQueue.allSatisfy({ $0.changeToken != operation.changeToken }) else {
             return
         }

@@ -5,13 +5,13 @@ public let maxRecommendedRecordsPerOperation = 400
 public enum SyncWork: Identifiable {
     public enum Result {
         case modify(ModifyOperation.Response)
-        case fetch(FetchOperation.Response)
+        case fetch(FetchLatestChangesOperation.Response)
         case createZone(Bool)
         case createSubscription(Bool)
     }
 
     case modify(ModifyOperation)
-    case fetch(FetchOperation)
+    case fetch(FetchLatestChangesOperation)
     case createZone(CreateZoneOperation)
     case createSubscription(CreateSubscriptionOperation)
 
@@ -89,7 +89,7 @@ protocol SyncOperation {
     var retryCount: Int { get set }
 }
 
-public struct FetchOperation: Identifiable, SyncOperation {
+public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
     public struct Response {
         public let changeToken: CKServerChangeToken?
         public let changedRecords: [CKRecord]

@@ -9,13 +9,13 @@ class SuccessfulMockOperationHandler: OperationHandler {
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
 
-    func handle(fetchOperation _: FetchOperation, completion: @escaping (Result<FetchOperation.Response, Error>) -> Void) {
+    func handle(fetchOperation _: FetchLatestChangesOperation, completion: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(60)) {
             self.operationCount += 1
 
             completion(
                 .success(
-                    FetchOperation.Response(
+                    FetchLatestChangesOperation.Response(
                         changeToken: nil,
                         changedRecords: (0 ..< 400).map { _ in makeTestRecord() },
                         deletedRecordIDs: [],
@@ -42,7 +42,7 @@ class FailingMockOperationHandler: OperationHandler {
 
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
-    func handle(fetchOperation _: FetchOperation, completion _: @escaping (Result<FetchOperation.Response, Error>) -> Void) {}
+    func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
 
     func handle(modifyOperation _: ModifyOperation, completion: @escaping (Result<ModifyOperation.Response, Error>) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(60)) {
@@ -62,7 +62,7 @@ class FailOnceMockOperationHandler: OperationHandler {
 
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
-    func handle(fetchOperation _: FetchOperation, completion _: @escaping (Result<FetchOperation.Response, Error>) -> Void) {}
+    func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
 
     func handle(modifyOperation: ModifyOperation, completion: @escaping (Result<ModifyOperation.Response, Error>) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(60)) {
@@ -79,7 +79,7 @@ class FailOnceMockOperationHandler: OperationHandler {
 
 class PartialFailureMockOperationHandler: OperationHandler {
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
-    func handle(fetchOperation _: FetchOperation, completion _: @escaping (Result<FetchOperation.Response, Error>) -> Void) {}
+    func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
 
     func handle(modifyOperation _: ModifyOperation, completion: @escaping (Result<ModifyOperation.Response, Error>) -> Void) {
@@ -468,7 +468,7 @@ final class CloudSyncSessionTests: XCTestCase {
             }
             .store(in: &tasks)
 
-        let operation = FetchOperation(changeToken: nil)
+        let operation = FetchLatestChangesOperation(changeToken: nil)
         session.dispatch(event: .doWork(.fetch(operation)))
 
         wait(for: [expectation], timeout: 1)

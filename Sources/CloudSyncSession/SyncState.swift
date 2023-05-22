@@ -14,7 +14,7 @@ public struct SyncState {
     internal var modifyQueue = [ModifyOperation]()
 
     /// The queue of fetch requests to be handled.
-    internal var fetchQueue = [FetchOperation]()
+    internal var fetchQueue = [FetchLatestChangesOperation]()
 
     /// The queue of create zone requests to be handled.
     internal var createZoneQueue = [CreateZoneOperation]()
@@ -255,7 +255,7 @@ public struct SyncState {
             switch result {
             case let .fetch(response):
                 if response.hasMore {
-                    state.prioritizeWork(.fetch(FetchOperation(changeToken: response.changeToken)))
+                    state.prioritizeWork(.fetch(FetchLatestChangesOperation(changeToken: response.changeToken)))
                 }
             case let .createZone(didCreateZone):
                 state.hasCreatedZone = didCreateZone

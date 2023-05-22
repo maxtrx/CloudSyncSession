@@ -127,7 +127,7 @@ public class CloudKitOperationHandler: OperationHandler {
         queueOperation(operation)
     }
 
-    public func handle(fetchOperation: FetchOperation, completion: @escaping (Result<FetchOperation.Response, Error>) -> Void) {
+    public func handle(fetchOperation: FetchLatestChangesOperation, completion: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {
         var hasMore = false
         var token: CKServerChangeToken? = fetchOperation.changeToken
         var changedRecords: [CKRecord] = []
@@ -213,7 +213,7 @@ public class CloudKitOperationHandler: OperationHandler {
 
                 completion(
                     .success(
-                        FetchOperation.Response(
+                        FetchLatestChangesOperation.Response(
                             changeToken: token,
                             changedRecords: changedRecords,
                             deletedRecordIDs: deletedRecordIDs,
