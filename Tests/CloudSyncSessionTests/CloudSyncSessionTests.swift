@@ -462,7 +462,7 @@ final class CloudSyncSessionTests: XCTestCase {
 
         var timesCalled = 0
 
-        session.fetchWorkCompletedSubject
+        session.fetchLatestChangesWorkCompletedSubject
             .sink { _ in
                 timesCalled += 1
 

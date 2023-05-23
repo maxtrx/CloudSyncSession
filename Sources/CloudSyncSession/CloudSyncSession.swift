@@ -31,7 +31,10 @@ public class CloudSyncSession {
     public let eventsPublisher = CurrentValueSubject<SyncEvent?, Never>(nil)
 
     /// A Combine subject that publishes fetch work that has completed.
-    public let fetchWorkCompletedSubject = PassthroughSubject<(FetchLatestChangesOperation, FetchLatestChangesOperation.Response), Never>()
+    public let fetchLatestChangesWorkCompletedSubject = PassthroughSubject<(FetchLatestChangesOperation, FetchLatestChangesOperation.Response), Never>()
+    
+    /// A Combine subject that publishes fetch work that has completed.
+    public let fetchRecordsWorkCompletedSubject = PassthroughSubject<(FetchRecordsOperation, FetchRecordsOperation.Response), Never>()
 
     /// A Combine subject that publishes modify work that has completed.
     public let modifyWorkCompletedSubject = PassthroughSubject<(ModifyOperation, ModifyOperation.Response), Never>()

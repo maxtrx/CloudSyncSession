@@ -10,7 +10,11 @@ struct SubjectMiddleware: Middleware {
                 switch result {
                 case let .fetchLatestChanges(response):
                     if case let .fetchLatestChanges(operation) = work {
-                        session.fetchWorkCompletedSubject.send((operation, response))
+                        session.fetchLatestChangesWorkCompletedSubject.send((operation, response))
+                    }
+                case let .fetchRecords(response):
+                    if case let .fetchRecords(operation) = work {
+                        session.fetchRecordsWorkCompletedSubject.send((operation, response))
                     }
                 case let .modify(response):
                     if case let .modify(operation) = work {
