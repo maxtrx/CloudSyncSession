@@ -229,6 +229,57 @@ public class CloudKitOperationHandler: OperationHandler {
 
         queueOperation(operation)
     }
+    
+    public func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {
+        let operation = CKQueryOperation(query: fetchOperation.query)
+        operation.resultsLimit = fetchOperation.resultLimit
+        operation.qualityOfService = .userInteractive
+        operation.zoneID = zoneID
+        
+        var records = [CKRecord]()
+        
+        operation.recordFetchedBlock = { record in
+            records.append(record)
+        }
+                
+        operation.queryCompletionBlock = { [weak self] (cursor, error) in
+            guard let self = self else {
+                return
+            }
+
+            if let error = error {
+                os_log(
+                    "Failed to fetch record zone changes: %{public}@",
+                    log: self.log,
+                    type: .error,
+                    String(describing: error)
+                )
+
+                if let ckError = error as? CKError {
+                    // Use the suggested retry delay, or exponentially increase throttle duration if not provided
+                    self.throttleDuration = min(Self.maxThrottleDuration, ckError.retryAfterSeconds ?? (self.throttleDuration * 2))
+                }
+
+                completion(.failure(error))
+            } else {
+                os_log("Finished fetching record zone changes", log: self.log, type: .info)
+
+                // On success, back off of the throttle duration by 66%. Backing off too quickly can result in thrashing.
+                self.throttleDuration = max(Self.minThrottleDuration, self.throttleDuration * 2 / 3)
+
+                completion(
+                    .success(
+                        FetchRecordsOperation.Response(records: records)
+                    )
+                )
+            }
+        }
+        
+        operation.qualityOfService = qos
+        operation.database = database
+
+        queueOperation(operation)
+    }
 
     public func handle(createZoneOperation: CreateZoneOperation, completion: @escaping (Result<Bool, Error>) -> Void) {
         checkCustomZone(zoneID: createZoneOperation.zoneID) { result in

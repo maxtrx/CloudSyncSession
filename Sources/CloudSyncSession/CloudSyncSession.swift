@@ -96,7 +96,7 @@ public class CloudSyncSession {
 
     /// Queue a fetch operation.
     public func fetch(_ operation: FetchLatestChangesOperation) {
-        guard state.fetchQueue.allSatisfy({ $0.changeToken != operation.changeToken }) else {
+        guard state.fetchLatestChangesQueue.allSatisfy({ $0.changeToken != operation.changeToken }) else {
             return
         }
 

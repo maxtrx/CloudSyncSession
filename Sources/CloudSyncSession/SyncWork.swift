@@ -6,12 +6,14 @@ public enum SyncWork: Identifiable {
     public enum Result {
         case modify(ModifyOperation.Response)
         case fetchLatestChanges(FetchLatestChangesOperation.Response)
+        case fetchRecords(FetchRecordsOperation.Response)
         case createZone(Bool)
         case createSubscription(Bool)
     }
 
     case modify(ModifyOperation)
     case fetchLatestChanges(FetchLatestChangesOperation)
+    case fetchRecords(FetchRecordsOperation)
     case createZone(CreateZoneOperation)
     case createSubscription(CreateSubscriptionOperation)
 
@@ -20,6 +22,8 @@ public enum SyncWork: Identifiable {
         case let .modify(operation):
             return operation.id
         case let .fetchLatestChanges(operation):
+            return operation.id
+        case let .fetchRecords(operation):
             return operation.id
         case let .createZone(operation):
             return operation.id
@@ -33,6 +37,8 @@ public enum SyncWork: Identifiable {
         case let .modify(operation):
             return operation.retryCount
         case let .fetchLatestChanges(operation):
+            return operation.retryCount
+        case let .fetchRecords(operation):
             return operation.retryCount
         case let .createZone(operation):
             return operation.retryCount
@@ -51,6 +57,10 @@ public enum SyncWork: Identifiable {
             operation.retryCount += 1
 
             return .fetchLatestChanges(operation)
+        case var .fetchRecords(operation):
+            operation.retryCount += 1
+
+            return .fetchRecords(operation)
         case var .createZone(operation):
             operation.retryCount += 1
 
@@ -76,7 +86,9 @@ public enum SyncWork: Identifiable {
         case let .modify(operation):
             return "Modify with \(operation.records.count) records to save and \(operation.recordIDsToDelete.count) to delete"
         case .fetchLatestChanges:
-            return "Fetch"
+            return "Fetch Latest Changes"
+        case .fetchRecords:
+            return "Fetch Records"
         case .createZone:
             return "Create zone"
         case .createSubscription:

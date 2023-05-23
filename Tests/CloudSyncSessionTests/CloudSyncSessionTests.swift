@@ -6,6 +6,7 @@ import XCTest
 class SuccessfulMockOperationHandler: OperationHandler {
     private var operationCount = 0
 
+    func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {}
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
 
@@ -40,6 +41,7 @@ class FailingMockOperationHandler: OperationHandler {
         self.error = error
     }
 
+    func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {}
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
@@ -60,6 +62,7 @@ class FailOnceMockOperationHandler: OperationHandler {
         self.error = error
     }
 
+    func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {}
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
@@ -78,6 +81,7 @@ class FailOnceMockOperationHandler: OperationHandler {
 }
 
 class PartialFailureMockOperationHandler: OperationHandler {
+    func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {}
     func handle(createZoneOperation _: CreateZoneOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}
     func handle(fetchOperation _: FetchLatestChangesOperation, completion _: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {}
     func handle(createSubscriptionOperation _: CreateSubscriptionOperation, completion _: @escaping (Result<Bool, Error>) -> Void) {}

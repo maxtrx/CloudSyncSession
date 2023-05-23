@@ -14,7 +14,10 @@ public struct SyncState {
     internal var modifyQueue = [ModifyOperation]()
 
     /// The queue of fetch requests to be handled.
-    internal var fetchQueue = [FetchLatestChangesOperation]()
+    internal var fetchLatestChangesQueue = [FetchLatestChangesOperation]()
+    
+    /// The queue of fetch requests to be handled.
+    internal var fetchRecordsQueue = [FetchRecordsOperation]()
 
     /// The queue of create zone requests to be handled.
     internal var createZoneQueue = [CreateZoneOperation]()
@@ -54,7 +57,7 @@ public struct SyncState {
 
     /// Indicates whether or not there's any work to be done.
     public var hasWorkQueued: Bool {
-        !modifyQueue.isEmpty || !fetchQueue.isEmpty || !createZoneQueue.isEmpty || !createSubscriptionQueue.isEmpty
+        !modifyQueue.isEmpty || !fetchLatestChangesQueue.isEmpty || !createZoneQueue.isEmpty || !createSubscriptionQueue.isEmpty
     }
 
     /// Indicates whether the session is currently fetching.
@@ -99,7 +102,7 @@ public struct SyncState {
                 case .createZone:
                     return !createZoneQueue.isEmpty
                 case .fetch:
-                    return !fetchQueue.isEmpty
+                    return !fetchLatestChangesQueue.isEmpty
                 case .modify:
                     return !modifyQueue.isEmpty
                 case .createSubscription:
@@ -141,7 +144,7 @@ public struct SyncState {
                 return SyncWork.modify(operation)
             }
         case .fetch:
-            if let operation = fetchQueue.first {
+            if let operation = fetchLatestChangesQueue.first {
                 return SyncWork.fetchLatestChanges(operation)
             }
         case .createZone:
@@ -172,7 +175,9 @@ public struct SyncState {
     internal mutating func pushWork(_ work: SyncWork) {
         switch work {
         case let .fetchLatestChanges(operation):
-            fetchQueue.append(operation)
+            fetchLatestChangesQueue.append(operation)
+        case let .fetchRecords(operation):
+            fetchRecordsQueue.append(operation)
         case let .modify(operation):
             modifyQueue.append(operation)
         case let .createZone(operation):
@@ -186,7 +191,9 @@ public struct SyncState {
     internal mutating func prioritizeWork(_ work: SyncWork) {
         switch work {
         case let .fetchLatestChanges(operation):
-            fetchQueue = [operation] + fetchQueue
+            fetchLatestChangesQueue = [operation] + fetchLatestChangesQueue
+        case let .fetchRecords(operation):
+            fetchRecordsQueue = [operation] + fetchRecordsQueue
         case let .modify(operation):
             modifyQueue = [operation] + modifyQueue
         case let .createZone(operation):
@@ -200,7 +207,9 @@ public struct SyncState {
     internal mutating func popWork(work: SyncWork) {
         switch work {
         case let .fetchLatestChanges(operation):
-            fetchQueue = fetchQueue.filter { $0.id != operation.id }
+            fetchLatestChangesQueue = fetchLatestChangesQueue.filter { $0.id != operation.id }
+        case let .fetchRecords(operation):
+            fetchRecordsQueue = fetchRecordsQueue.filter { $0.id != operation.id }
         case let .modify(operation):
             modifyQueue = modifyQueue.filter { $0.id != operation.id }
         case let .createZone(operation):

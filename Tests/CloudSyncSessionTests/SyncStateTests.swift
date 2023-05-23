@@ -55,7 +55,7 @@ final class SyncStateTests: XCTestCase {
         XCTAssertEqual(state.operationMode, SyncState.OperationMode.modify)
 
         switch state.currentWork {
-        case .fetchLatestChanges, .createZone, .createSubscription, nil:
+        case .fetchLatestChanges, .fetchRecords, .createZone, .createSubscription, nil:
             XCTFail()
         case .modify:
             break
@@ -78,7 +78,7 @@ final class SyncStateTests: XCTestCase {
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:
             XCTFail()
-        case .fetchLatestChanges:
+        case .fetchLatestChanges, .fetchRecords:
             break
         }
     }
@@ -118,7 +118,7 @@ final class SyncStateTests: XCTestCase {
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:
             XCTFail()
-        case .fetchLatestChanges:
+        case .fetchLatestChanges, .fetchRecords:
             break
         }
     }
@@ -130,7 +130,7 @@ final class SyncStateTests: XCTestCase {
         state = state.reduce(event: .doWork(work))
         state.popWork(work: work)
 
-        XCTAssertEqual(state.fetchQueue.count, 0)
+        XCTAssertEqual(state.fetchLatestChangesQueue.count, 0)
     }
 
     func testPopRetriedWork() {
@@ -141,6 +141,6 @@ final class SyncStateTests: XCTestCase {
         state = state.reduce(event: .doWork(work))
         state.popWork(work: work)
 
-        XCTAssertEqual(state.fetchQueue.count, 0)
+        XCTAssertEqual(state.fetchLatestChangesQueue.count, 0)
     }
 }
