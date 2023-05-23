@@ -105,6 +105,11 @@ public class CloudSyncSession {
 
         dispatch(event: .doWork(.fetchLatestChanges(operation)))
     }
+    
+    /// Queue a fetch operation.
+    public func fetch(_ operation: FetchRecordsOperation) {
+        dispatch(event: .doWork(.fetchRecords(operation)))
+    }
 
     /// Queue a modify operation.
     public func modify(_ operation: ModifyOperation) {
