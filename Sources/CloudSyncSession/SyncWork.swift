@@ -109,12 +109,14 @@ public struct FetchRecordsOperation: Identifiable, SyncOperation {
     public let id = UUID()
     public let resultLimit: Int
     public let query: CKQuery
+    public let userInfo: [String: Any]?
 
     var retryCount: Int = 0
 
-    public init(resultLimit: Int, query: CKQuery) {
+    public init(resultLimit: Int, query: CKQuery, userInfo: [String: Any]? = nil) {
         self.resultLimit = resultLimit
         self.query = query
+        self.userInfo = userInfo
     }
 }
 
@@ -127,12 +129,14 @@ public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
     }
 
     public let id = UUID()
+    public let userInfo: [String: Any]?
 
     var changeToken: CKServerChangeToken?
     var retryCount: Int = 0
 
-    public init(changeToken: CKServerChangeToken?) {
+    public init(changeToken: CKServerChangeToken?, userInfo: [String: Any]? = nil) {
         self.changeToken = changeToken
+        self.userInfo = userInfo
     }
 }
 
