@@ -109,14 +109,15 @@ public struct FetchRecordsOperation: Identifiable, SyncOperation {
     public let id = UUID()
     public let resultLimit: Int
     public let query: CKQuery
-    public let userInfo: [String: Any]?
+    /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
+    public let parent: SyncChainWork?
 
     var retryCount: Int = 0
 
-    public init(resultLimit: Int, query: CKQuery, userInfo: [String: Any]? = nil) {
+    public init(resultLimit: Int, query: CKQuery, parent: SyncChainWork? = nil) {
         self.resultLimit = resultLimit
         self.query = query
-        self.userInfo = userInfo
+        self.parent = parent
     }
 }
 
@@ -129,14 +130,15 @@ public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
     }
 
     public let id = UUID()
-    public let userInfo: [String: Any]?
+    /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
+    public let parent: SyncChainWork?
 
     var changeToken: CKServerChangeToken?
     var retryCount: Int = 0
 
-    public init(changeToken: CKServerChangeToken?, userInfo: [String: Any]? = nil) {
+    public init(changeToken: CKServerChangeToken?, parent: SyncChainWork? = nil) {
         self.changeToken = changeToken
-        self.userInfo = userInfo
+        self.parent = parent
     }
 }
 
@@ -149,16 +151,19 @@ public struct ModifyOperation: Identifiable, SyncOperation {
     public let id = UUID()
     public let checkpointID: UUID?
     public let userInfo: [String: Any]?
+    /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
+    public let parent: SyncChainWork?
 
     var records: [CKRecord]
     var recordIDsToDelete: [CKRecord.ID]
     var retryCount: Int = 0
 
-    public init(records: [CKRecord], recordIDsToDelete: [CKRecord.ID], checkpointID: UUID?, userInfo: [String: Any]?) {
+    public init(records: [CKRecord], recordIDsToDelete: [CKRecord.ID], checkpointID: UUID?, userInfo: [String: Any]?, parent: SyncChainWork? = nil) {
         self.records = records
         self.recordIDsToDelete = recordIDsToDelete
         self.checkpointID = checkpointID
         self.userInfo = userInfo
+        self.parent = parent
     }
 
     var shouldSplit: Bool {
