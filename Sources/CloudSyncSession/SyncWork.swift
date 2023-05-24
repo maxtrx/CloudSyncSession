@@ -110,11 +110,11 @@ public struct FetchRecordsOperation: Identifiable, SyncOperation {
     public let resultLimit: Int
     public let query: CKQuery
     /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
-    public let parent: SyncChainWork?
+    public let parent: (any SyncChainWork)?
 
     var retryCount: Int = 0
 
-    public init(resultLimit: Int, query: CKQuery, parent: SyncChainWork? = nil) {
+    public init(resultLimit: Int, query: CKQuery, parent: (any SyncChainWork)? = nil) {
         self.resultLimit = resultLimit
         self.query = query
         self.parent = parent
@@ -131,12 +131,12 @@ public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
 
     public let id = UUID()
     /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
-    public let parent: SyncChainWork?
+    public let parent: (any SyncChainWork)?
 
     var changeToken: CKServerChangeToken?
     var retryCount: Int = 0
 
-    public init(changeToken: CKServerChangeToken?, parent: SyncChainWork? = nil) {
+    public init(changeToken: CKServerChangeToken?, parent: (any SyncChainWork)? = nil) {
         self.changeToken = changeToken
         self.parent = parent
     }
@@ -152,13 +152,13 @@ public struct ModifyOperation: Identifiable, SyncOperation {
     public let checkpointID: UUID?
     public let userInfo: [String: Any]?
     /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
-    public let parent: SyncChainWork?
+    public let parent: (any SyncChainWork)?
 
     var records: [CKRecord]
     var recordIDsToDelete: [CKRecord.ID]
     var retryCount: Int = 0
 
-    public init(records: [CKRecord], recordIDsToDelete: [CKRecord.ID], checkpointID: UUID?, userInfo: [String: Any]?, parent: SyncChainWork? = nil) {
+    public init(records: [CKRecord], recordIDsToDelete: [CKRecord.ID], checkpointID: UUID?, userInfo: [String: Any]?, parent: (any SyncChainWork)? = nil) {
         self.records = records
         self.recordIDsToDelete = recordIDsToDelete
         self.checkpointID = checkpointID
