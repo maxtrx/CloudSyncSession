@@ -19,4 +19,7 @@ public protocol SyncChainWork {
     
     /// Creates a `SyncOperation` and dispatches it to the session.
     func dispatch(to session: CloudSyncSession) throws
+    
+    /// Dispatches the next request in the work chain to the session.
+    func dispatchSuccessor(to session: CloudSyncSession) throws
 }
