@@ -8,7 +8,7 @@
 import Foundation
 
 /// A work item that is part of a larger task that involves multiple requests made to CloudKit.
-public protocol SyncChainWork {
+public protocol SyncChainWork<OperationResponse> {
     associatedtype OperationResponse
     
     /// The next request to be dispatched after this request completed. If the parent work has been completed, it is `nil`.
