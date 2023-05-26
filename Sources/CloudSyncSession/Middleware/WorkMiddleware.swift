@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import os.log
 
 private let workDelay = DispatchTimeInterval.milliseconds(60)
 
@@ -25,6 +26,11 @@ struct WorkMiddleware: Middleware {
 
         return event
     }
+    
+    var log2 = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Sync Event"
+    )
 
     private func doWork(_ work: SyncWork) {
         switch work {
@@ -38,6 +44,7 @@ struct WorkMiddleware: Middleware {
                 }
             }
         case let .fetchRecords(operation):
+            os_log("%{public}@", log: log2, type: .debug, "doWork")
             session.operationHandler.handle(fetchOperation: operation) { result in
                 switch result {
                 case let .failure(error):

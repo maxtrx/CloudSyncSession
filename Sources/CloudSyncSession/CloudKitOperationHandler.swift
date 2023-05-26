@@ -230,6 +230,11 @@ public class CloudKitOperationHandler: OperationHandler {
         queueOperation(operation)
     }
     
+    var log2 = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Sync Event"
+    )
+    
     public func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {
         let operation = CKQueryOperation(query: fetchOperation.query)
         operation.resultsLimit = fetchOperation.resultLimit
@@ -237,12 +242,8 @@ public class CloudKitOperationHandler: OperationHandler {
         operation.zoneID = zoneID
         
         var records = [CKRecord]()
-        os_log(
-            "fetchOperation",
-            log: self.log,
-            type: .info
-        )
-        
+        os_log("%{public}@", log: log2, type: .debug, "fetchOperation")
+
         operation.recordFetchedBlock = { record in
             os_log(
                 "Appending record",
