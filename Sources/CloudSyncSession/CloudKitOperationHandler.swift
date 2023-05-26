@@ -237,8 +237,18 @@ public class CloudKitOperationHandler: OperationHandler {
         operation.zoneID = zoneID
         
         var records = [CKRecord]()
+        os_log(
+            "fetchOperation",
+            log: self.log,
+            type: .info
+        )
         
         operation.recordFetchedBlock = { record in
+            os_log(
+                "Appending record",
+                log: self.log,
+                type: .info
+            )
             records.append(record)
         }
                 
