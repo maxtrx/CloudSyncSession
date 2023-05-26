@@ -233,7 +233,6 @@ public class CloudKitOperationHandler: OperationHandler {
     public func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {
         let operation = CKQueryOperation(query: fetchOperation.query)
         operation.resultsLimit = fetchOperation.resultLimit
-        operation.qualityOfService = .userInteractive
         operation.zoneID = zoneID
         
         var records = [CKRecord]()
