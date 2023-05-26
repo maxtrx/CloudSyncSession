@@ -73,7 +73,7 @@ final class SyncStateTests: XCTestCase {
         let createSubscriptionWork = SyncWork.createSubscription(CreateSubscriptionOperation(zoneID: testZoneID))
         state = state.reduce(event: .workSuccess(createSubscriptionWork, .createSubscription(true)))
 
-        XCTAssertEqual(state.operationMode, SyncState.OperationMode.fetch)
+        XCTAssertEqual(state.operationMode, SyncState.OperationMode.fetchChanges)
 
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:
@@ -113,7 +113,7 @@ final class SyncStateTests: XCTestCase {
         let createSubscriptionWork = SyncWork.createSubscription(CreateSubscriptionOperation(zoneID: testZoneID))
         state = state.reduce(event: .workSuccess(createSubscriptionWork, .createSubscription(true)))
 
-        XCTAssertEqual(state.operationMode, SyncState.OperationMode.fetch)
+        XCTAssertEqual(state.operationMode, SyncState.OperationMode.fetchChanges)
 
         switch state.currentWork {
         case .modify, .createZone, .createSubscription, nil:

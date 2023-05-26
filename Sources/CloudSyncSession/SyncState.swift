@@ -5,7 +5,8 @@ public struct SyncState {
     /// The various modes that the session can be operating in.
     public enum OperationMode {
         case modify
-        case fetch
+        case fetchChanges
+        case fetchRecords
         case createZone
         case createSubscription
     }
@@ -57,12 +58,12 @@ public struct SyncState {
 
     /// Indicates whether or not there's any work to be done.
     public var hasWorkQueued: Bool {
-        !modifyQueue.isEmpty || !fetchLatestChangesQueue.isEmpty || !createZoneQueue.isEmpty || !createSubscriptionQueue.isEmpty
+        !modifyQueue.isEmpty || !fetchLatestChangesQueue.isEmpty || !fetchRecordsQueue.isEmpty || !createZoneQueue.isEmpty || !createSubscriptionQueue.isEmpty
     }
 
     /// Indicates whether the session is currently fetching.
     public var isFetching: Bool {
-        operationMode == .fetch
+        operationMode == .fetchChanges || operationMode == .fetchRecords
     }
 
     /// Indicates whether the session is currently modifying.
@@ -87,7 +88,7 @@ public struct SyncState {
         allowedModes.formUnion([.createZone, .createSubscription])
 
         if hasCreatedZone ?? false, hasCreatedSubscription ?? false {
-            allowedModes.formUnion([.fetch, .modify])
+            allowedModes.formUnion([.fetchChanges, .fetchRecords, .modify])
         }
 
         return allowedModes
@@ -95,14 +96,16 @@ public struct SyncState {
 
     /// An ordered list of the the kind of work that is allowed at this time.
     internal var preferredOperationModes: [OperationMode?] {
-        [.createZone, .createSubscription, .modify, .fetch, nil]
+        [.createZone, .createSubscription, .modify, .fetchChanges, .fetchRecords, nil]
             .filter { allowedOperationModes.contains($0) }
             .filter { mode in
                 switch mode {
                 case .createZone:
                     return !createZoneQueue.isEmpty
-                case .fetch:
+                case .fetchChanges:
                     return !fetchLatestChangesQueue.isEmpty
+                case .fetchRecords:
+                    return !fetchRecordsQueue.isEmpty
                 case .modify:
                     return !modifyQueue.isEmpty
                 case .createSubscription:
@@ -115,7 +118,8 @@ public struct SyncState {
 
     /// Indicates whether the session is ready to perform fetches and modifications.
     public var isRunning: Bool {
-        allowedOperationModes.contains(.fetch)
+        allowedOperationModes.contains(.fetchChanges)
+            && allowedOperationModes.contains(.fetchRecords)
             && allowedOperationModes.contains(.modify)
             && !isHalted
     }
@@ -143,9 +147,13 @@ public struct SyncState {
             if let operation = modifyQueue.first {
                 return SyncWork.modify(operation)
             }
-        case .fetch:
+        case .fetchChanges:
             if let operation = fetchLatestChangesQueue.first {
                 return SyncWork.fetchLatestChanges(operation)
+            }
+        case .fetchRecords:
+            if let operation = fetchRecordsQueue.first {
+                return SyncWork.fetchRecords(operation)
             }
         case .createZone:
             if let operation = createZoneQueue.first {
