@@ -33,6 +33,8 @@ struct WorkMiddleware: Middleware {
     )
 
     private func doWork(_ work: SyncWork) {
+        os_log("%{public}@", log: log2, type: .debug, "doWork \(work.debugDescription)")
+
         switch work {
         case let .fetchLatestChanges(operation):
             session.operationHandler.handle(fetchOperation: operation) { result in
@@ -44,7 +46,7 @@ struct WorkMiddleware: Middleware {
                 }
             }
         case let .fetchRecords(operation):
-            os_log("%{public}@", log: log2, type: .debug, "doWork")
+            os_log("%{public}@", log: log2, type: .debug, "doWork fetchRecords")
             session.operationHandler.handle(fetchOperation: operation) { result in
                 switch result {
                 case let .failure(error):
