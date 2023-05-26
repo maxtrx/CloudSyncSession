@@ -10,15 +10,19 @@ struct WorkMiddleware: Middleware {
     private let dispatchQueue = DispatchQueue(label: "WorkMiddleware.Dispatch", qos: .userInitiated)
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
+        os_log("%{public}@", log: log2, type: .debug, "run \(event.logDescription)")
+
         let prevState = session.state
         let event = next(event)
         let newState = session.state
 
         if let work = newState.currentWork {
+            os_log("%{public}@", log: log2, type: .debug, "✅ \(event.logDescription)")
             let prevWork = prevState.currentWork
 
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {
                 dispatchQueue.asyncAfter(deadline: .now() + workDelay) {
+                    os_log("%{public}@", log: log2, type: .debug, "🔥 \(event.logDescription)")
                     self.doWork(work)
                 }
             }
