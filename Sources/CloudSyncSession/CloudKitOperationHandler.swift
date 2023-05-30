@@ -79,6 +79,11 @@ public class CloudKitOperationHandler: OperationHandler {
         let deadline: DispatchTime = (lastOperationTime ?? DispatchTime.now()) + throttleDuration
 
         DispatchQueue.main.asyncAfter(deadline: deadline) {
+            os_log(
+                "🔥 Executing operation",
+                log: self.log,
+                type: .error
+            )
             self.operationQueue.addOperation(operation)
             self.operationQueue.addOperation {
                 self.lastOperationTime = DispatchTime.now()
@@ -90,6 +95,11 @@ public class CloudKitOperationHandler: OperationHandler {
         modifyOperation: ModifyOperation,
         completion: @escaping (Result<ModifyOperation.Response, Error>) -> Void
     ) {
+        os_log(
+            "🔥 Handle Modify",
+            log: self.log,
+            type: .error
+        )
         let recordsToSave = modifyOperation.records
         let recordIDsToDelete = modifyOperation.recordIDsToDelete
 
@@ -232,7 +242,7 @@ public class CloudKitOperationHandler: OperationHandler {
     
     public func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {
         os_log(
-            "🔥 Fetching Records",
+            "🔥 Handle Fetch",
             log: self.log,
             type: .error
         )
