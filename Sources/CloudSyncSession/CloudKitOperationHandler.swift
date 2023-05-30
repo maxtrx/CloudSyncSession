@@ -231,6 +231,12 @@ public class CloudKitOperationHandler: OperationHandler {
     }
     
     public func handle(fetchOperation: FetchRecordsOperation, completion: @escaping (Result<FetchRecordsOperation.Response, Error>) -> Void) {
+        os_log(
+            "🔥 Fetching Records",
+            log: self.log,
+            type: .error
+        )
+        
         let operation = CKQueryOperation(query: fetchOperation.query)
         operation.resultsLimit = fetchOperation.resultLimit
         operation.zoneID = zoneID
@@ -245,6 +251,12 @@ public class CloudKitOperationHandler: OperationHandler {
             guard let self = self else {
                 return
             }
+            
+            os_log(
+                "🔥✅ Completed",
+                log: self.log,
+                type: .error
+            )
 
             if let error = error {
                 os_log(
