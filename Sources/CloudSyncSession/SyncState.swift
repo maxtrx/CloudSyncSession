@@ -230,7 +230,6 @@ public struct SyncState {
     /// Update based on a sync event.
     internal func reduce(event: SyncEvent) -> SyncState {
         var state = self
-        print("Got reduce")
 
         switch event {
         case let .accountStatusChanged(accountStatus):

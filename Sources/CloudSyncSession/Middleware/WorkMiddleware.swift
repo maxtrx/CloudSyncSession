@@ -13,7 +13,7 @@ struct WorkMiddleware: Middleware {
         let event = next(event)
         let newState = session.state
 
-        print("Got here 4")
+        print("🔥 \(event.logDescription)")
         if let work = newState.currentWork {
             let prevWork = prevState.currentWork
 
