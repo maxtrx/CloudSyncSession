@@ -80,9 +80,10 @@ public class CloudKitOperationHandler: OperationHandler {
 
         DispatchQueue.main.asyncAfter(deadline: deadline) {
             os_log(
-                "🔥 Executing operation",
+                "🔥 Executing operation after waited %{public}.0f seconds",
                 log: self.log,
-                type: .error
+                type: .error,
+                self.throttleDuration
             )
             self.operationQueue.addOperation(operation)
             self.operationQueue.addOperation {
