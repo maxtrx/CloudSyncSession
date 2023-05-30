@@ -13,10 +13,13 @@ struct WorkMiddleware: Middleware {
         let event = next(event)
         let newState = session.state
 
+        print("Got here 4")
         if let work = newState.currentWork {
             let prevWork = prevState.currentWork
 
+            print("Got here 5")
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {
+                print("Got here 6")
                 dispatchQueue.asyncAfter(deadline: .now() + workDelay) {
                     self.doWork(work)
                 }
@@ -38,6 +41,7 @@ struct WorkMiddleware: Middleware {
                 }
             }
         case let .fetchRecords(operation):
+            print("Got here 3")
             session.operationHandler.handle(fetchOperation: operation) { result in
                 switch result {
                 case let .failure(error):
