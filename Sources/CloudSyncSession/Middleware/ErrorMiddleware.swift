@@ -93,14 +93,7 @@ struct ErrorMiddleware: Middleware {
                     suggestedInterval = TimeInterval(retryAfter.doubleValue)
                 }
 
-                switch work {
-                case var .fetchLatestChanges(modifiedOperation):
-                    modifiedOperation.changeToken = resolveExpiredChangeToken()
-
-                    return .retry(.fetchLatestChanges(modifiedOperation), error, suggestedInterval)
-                default:
-                    return .halt(error)
-                }
+                return .halt(error)
             case .partialFailure:
                 switch work {
                 case .fetchLatestChanges:
