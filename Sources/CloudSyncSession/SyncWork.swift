@@ -107,16 +107,16 @@ public struct FetchRecordsOperation: Identifiable, SyncOperation {
     }
 
     public let id = UUID()
-    public let resultLimit: Int
+    public let resultLimit: Int?
     public let query: CKQuery
     /// The work item that dispatched the operation. If the operation is not part of a chained work, it is `nil`.
     public let parent: (any SyncChainWork<Response>)?
 
     var retryCount: Int = 0
 
-    public init(resultLimit: Int, query: CKQuery, parent: (any SyncChainWork<Response>)? = nil) {
-        self.resultLimit = resultLimit
+    public init(query: CKQuery, resultLimit: Int? = nil, parent: (any SyncChainWork<Response>)? = nil) {
         self.query = query
+        self.resultLimit = resultLimit
         self.parent = parent
     }
 }
