@@ -55,6 +55,8 @@ struct ErrorMiddleware: Middleware {
                 ckError.errorCode,
                 ckError.localizedDescription
             )
+            
+            print("Error!! \(ckError)")
 
             switch ckError.code {
             case .notAuthenticated,
