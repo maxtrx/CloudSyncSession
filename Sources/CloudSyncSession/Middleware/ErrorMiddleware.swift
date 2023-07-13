@@ -57,6 +57,11 @@ struct ErrorMiddleware: Middleware {
             )
             
             print("Error!! \(ckError)")
+            
+            if case .modify(let modifyOperation) = work,
+               let record = modifyOperation.records.first {
+                print("🟢 Content: \(record["content"]), Title: \(record["title"])")
+            }
 
             switch ckError.code {
             case .notAuthenticated,
