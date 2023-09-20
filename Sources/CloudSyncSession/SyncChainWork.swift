@@ -17,6 +17,9 @@ public protocol SyncChainWork<OperationResponse> {
     /// The response that is returned from the session for this particular work item.
     var response: OperationResponse? { get set }
     
+    /// Any error associated with this work in case the operation failed.
+    var error: Error? { get set }
+    
     /// Creates a `SyncOperation` and dispatches it to the session.
     func dispatch(to session: CloudSyncSession) throws
     
