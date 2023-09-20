@@ -31,13 +31,13 @@ public class CloudSyncSession {
     public let eventsPublisher = CurrentValueSubject<SyncEvent?, Never>(nil)
 
     /// A Combine subject that publishes fetch work that has completed.
-    public let fetchLatestChangesWorkCompletedSubject = PassthroughSubject<(FetchLatestChangesOperation, FetchLatestChangesOperation.Response), Never>()
+    public let fetchLatestChangesWorkCompletedSubject = PassthroughSubject<Result<(FetchLatestChangesOperation, FetchLatestChangesOperation.Response), Error>, Never>()
     
     /// A Combine subject that publishes fetch work that has completed.
-    public let fetchRecordsWorkCompletedSubject = PassthroughSubject<(FetchRecordsOperation, FetchRecordsOperation.Response), Never>()
+    public let fetchRecordsWorkCompletedSubject = PassthroughSubject<Result<(FetchRecordsOperation, FetchRecordsOperation.Response), Error>, Never>()
 
     /// A Combine subject that publishes modify work that has completed.
-    public let modifyWorkCompletedSubject = PassthroughSubject<(ModifyOperation, ModifyOperation.Response), Never>()
+    public let modifyWorkCompletedSubject = PassthroughSubject<Result<(ModifyOperation, ModifyOperation.Response), Error>, Never>()
 
     /// A Combine subject that signals when the session has halted due to an error.
     public let haltedSubject = CurrentValueSubject<Error?, Never>(nil)
