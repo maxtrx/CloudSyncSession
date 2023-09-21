@@ -36,6 +36,23 @@ struct ErrorMiddleware: Middleware {
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         switch event {
         case let .workFailure(work, error):
+            switch work {
+            case .modify:
+                if case let .modify(operation) = work {
+                    session.modifyWorkCompletedSubject.send((operation, .failure(error)))
+                }
+            case .fetchLatestChanges:
+                if case let .fetchLatestChanges(operation) = work {
+                    session.fetchLatestChangesWorkCompletedSubject.send((operation, .failure(error)))
+                }
+            case .fetchRecords:
+                if case let .fetchRecords(operation) = work {
+                    session.fetchRecordsWorkCompletedSubject.send((operation, .failure(error)))
+                }
+            default:
+                break
+            }
+            
             if let event = mapErrorToEvent(error: error, work: work, zoneID: session.zoneID) {
                 return next(event)
             }
