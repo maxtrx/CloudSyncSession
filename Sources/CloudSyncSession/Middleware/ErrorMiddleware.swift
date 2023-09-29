@@ -85,7 +85,6 @@ struct ErrorMiddleware: Middleware {
                  .constraintViolation,
                  .referenceViolation,
                  .invalidArguments,
-                 .serverRejectedRequest,
                  .resultsTruncated,
                  .batchRequestFailed,
                  .internalError:
@@ -95,7 +94,8 @@ struct ErrorMiddleware: Middleware {
                  .serviceUnavailable,
                  .zoneBusy,
                  .requestRateLimited,
-                 .serverResponseLost:
+                 .serverResponseLost,
+                 .serverRejectedRequest:
                 var suggestedInterval: TimeInterval?
 
                 if let retryAfter = ckError.userInfo[CKErrorRetryAfterKey] as? NSNumber {
