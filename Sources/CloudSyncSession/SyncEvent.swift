@@ -5,7 +5,7 @@ public enum SyncEvent {
     case start
 
     /// Indicates a non-recoverable er  ror has occured and we should halt.
-    case halt(Error)
+    case halt(SyncWork?, Error)
 
     /// Indicates the iCloud account status changed.
     case accountStatusChanged(CKAccountStatus)

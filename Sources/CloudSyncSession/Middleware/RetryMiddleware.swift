@@ -18,7 +18,7 @@ struct RetryMiddleware: Middleware {
             let currentRetryCount = work.retryCount
 
             if currentRetryCount + 1 > maxRetryCount {
-                session.dispatch(event: .halt(error))
+                session.dispatch(event: .halt(work, error))
             } else {
                 let retryInterval: TimeInterval
 

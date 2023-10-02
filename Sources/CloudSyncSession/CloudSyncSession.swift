@@ -89,7 +89,7 @@ public class CloudSyncSession {
 
     /// Stop/halt the session.
     public func stop() {
-        dispatch(event: .halt(StopError()))
+        dispatch(event: .halt(nil, StopError()))
     }
 
     /// Reset the session state.
