@@ -242,6 +242,12 @@ public class CloudKitOperationHandler: OperationHandler {
         operation.recordFetchedBlock = { record in
             records.append(record)
         }
+        
+        os_log(
+            "🦊 Fetching changes",
+            log: self.log,
+            type: .error
+        )
                 
         operation.queryCompletionBlock = { [weak self] (cursor, error) in
             guard let self = self else {
