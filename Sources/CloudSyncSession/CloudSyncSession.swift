@@ -128,9 +128,10 @@ public class CloudSyncSession {
 
                 if let middleware = middlewaresToRun.last {
                     os_log(
-                        "🦊 Got here 1",
+                        "🦊 Got here 1: %{public}@",
                         log: self.myLog,
-                        type: .info
+                        type: .info,
+                        String(describing: middleware)
                     )
                     
                     return middleware.run(
