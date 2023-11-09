@@ -1,23 +1,41 @@
 import Combine
 import Foundation
+import os.log
 
 private let workDelay = DispatchTimeInterval.milliseconds(60)
 
 struct WorkMiddleware: Middleware {
     var session: CloudSyncSession
 
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
+    
     private let dispatchQueue = DispatchQueue(label: "WorkMiddleware.Dispatch", qos: .userInitiated)
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         let prevState = session.state
         let event = next(event)
         let newState = session.state
+        
+        os_log(
+            "🦊 Got here 4",
+            log: self.myLog,
+            type: .info
+        )
 
         if let work = newState.currentWork {
             let prevWork = prevState.currentWork
 
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {
                 dispatchQueue.asyncAfter(deadline: .now() + workDelay) {
+                    os_log(
+                        "🦊 Got here 5",
+                        log: self.myLog,
+                        type: .info
+                    )
+                    
                     self.doWork(work)
                 }
             }
@@ -29,6 +47,12 @@ struct WorkMiddleware: Middleware {
     private func doWork(_ work: SyncWork) {
         switch work {
         case let .fetchLatestChanges(operation):
+            os_log(
+                "🦊 Got here 6",
+                log: self.myLog,
+                type: .info
+            )
+            
             session.operationHandler.handle(fetchOperation: operation) { result in
                 switch result {
                 case let .failure(error):

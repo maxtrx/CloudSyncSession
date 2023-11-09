@@ -46,6 +46,11 @@ public class CloudSyncSession {
     public let accountStatusSubject = CurrentValueSubject<CKAccountStatus?, Never>(nil)
 
     private var dispatchQueue = DispatchQueue(label: "CloudSyncSession.Dispatch", qos: .userInitiated)
+    
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
 
     /**
      Creates a session.
@@ -122,6 +127,12 @@ public class CloudSyncSession {
                 self.eventsPublisher.send(event)
 
                 if let middleware = middlewaresToRun.last {
+                    os_log(
+                        "🦊 Got here 1",
+                        log: self.myLog,
+                        type: .info
+                    )
+                    
                     return middleware.run(
                         next: { event in
                             next(event: event, middlewaresToRun: middlewaresToRun.dropLast())
