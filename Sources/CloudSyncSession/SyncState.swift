@@ -83,11 +83,13 @@ public struct SyncState {
 
         if isHalted {
             // Halted means no work allowed
+            os_log("🩲 Got here allowed modes: none", log: myLog, type: .info)
             return allowedModes
         }
 
         if !(hasGoodAccountStatus ?? false) {
             // Bad or unknown account status means no work allowed
+            os_log("🩲 Got here allowed modes: none", log: myLog, type: .info)
             return allowedModes
         }
 
@@ -96,7 +98,7 @@ public struct SyncState {
         if hasCreatedZone ?? false, hasCreatedSubscription ?? false {
             allowedModes.formUnion([.fetchChanges, .fetchRecords, .modify])
         }
-
+        os_log("🩲 Got here allowed modes: %{public}@", log: myLog, type: .info, String(describing: allowedModes))
         return allowedModes
     }
 
