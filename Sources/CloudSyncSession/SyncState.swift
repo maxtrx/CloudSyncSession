@@ -199,8 +199,19 @@ public struct SyncState {
         if isHalted {
             operationMode = nil
         }
+        
+        os_log(
+            "🩲 Got here updateOperationMode 1",
+            log: myLog,
+            type: .info
+        )
 
         if operationMode == nil || !preferredOperationModes.contains(operationMode) {
+            os_log(
+                "🩲 Got here updateOperationMode 2",
+                log: myLog,
+                type: .info
+            )
             operationMode = preferredOperationModes.first ?? nil
         }
     }
@@ -265,15 +276,35 @@ public struct SyncState {
             default:
                 state.hasGoodAccountStatus = false
             }
+            os_log(
+                "🩲 Got here reduce account status changed",
+                log: myLog,
+                type: .info
+            )
             state.updateOperationMode()
         case let .retryWork(work):
+            os_log(
+                "🩲 Got here reduce retry",
+                log: myLog,
+                type: .info
+            )
             state.popWork(work: work)
             state.pushWork(work.retried)
             state.updateOperationMode()
         case let .doWork(work):
+            os_log(
+                "🩲 Got here reduce do work",
+                log: myLog,
+                type: .info
+            )
             state.pushWork(work)
             state.updateOperationMode()
         case let .split(work, _):
+            os_log(
+                "🩲 Got here reduce split work",
+                log: myLog,
+                type: .info
+            )
             state.popWork(work: work)
 
             switch work {
@@ -287,9 +318,19 @@ public struct SyncState {
 
             state.updateOperationMode()
         case let .workFailure(work, _):
+            os_log(
+                "🩲 Got here reduce work failure",
+                log: myLog,
+                type: .info
+            )
             state.popWork(work: work)
             state.updateOperationMode()
         case let .workSuccess(work, result):
+            os_log(
+                "🩲 Got here reduce work success",
+                log: myLog,
+                type: .info
+            )
             state.retryCount = 0
             state.lastRetryError = nil
 
@@ -310,6 +351,11 @@ public struct SyncState {
 
             state.updateOperationMode()
         case let .resolveConflict(work, records, recordIDsToDelete):
+            os_log(
+                "🩲 Got here reduce resolve conflict",
+                log: myLog,
+                type: .info
+            )
             if case let .modify(failedOperation) = work {
                 let operation = ModifyOperation(records: records, recordIDsToDelete: recordIDsToDelete, checkpointID: work.checkpointID, userInfo: failedOperation.userInfo)
 
@@ -317,13 +363,33 @@ public struct SyncState {
                 state.pushWork(.modify(operation))
             }
         case .halt:
+            os_log(
+                "🩲 Got here reduce halt",
+                log: myLog,
+                type: .info
+            )
             state.isHalted = true
         case .start:
+            os_log(
+                "🩲 Got here reduce start",
+                log: myLog,
+                type: .info
+            )
             state.isHalted = false
         case let .retry(_, error, _):
+            os_log(
+                "🩲 Got here reduce retry",
+                log: myLog,
+                type: .info
+            )
             state.retryCount += 1
             state.lastRetryError = error
         case .noop:
+            os_log(
+                "🩲 Got here reduce noop",
+                log: myLog,
+                type: .info
+            )
             break
         }
 
