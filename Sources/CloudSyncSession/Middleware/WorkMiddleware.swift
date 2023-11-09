@@ -20,15 +20,28 @@ struct WorkMiddleware: Middleware {
         let newState = session.state
         
         os_log(
-            "🦊 Got here 4",
+            "🦊 Got here 4: %{public}@",
             log: self.myLog,
-            type: .info
+            type: .info,
+            String(describing: newState.currentWork)
         )
 
         if let work = newState.currentWork {
             let prevWork = prevState.currentWork
+            
+            os_log(
+                "🦊 Got here 4.1",
+                log: self.myLog,
+                type: .info
+            )
 
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {
+                os_log(
+                    "🦊 Got here 4.2",
+                    log: self.myLog,
+                    type: .info
+                )
+                
                 dispatchQueue.asyncAfter(deadline: .now() + workDelay) {
                     os_log(
                         "🦊 Got here 5",
