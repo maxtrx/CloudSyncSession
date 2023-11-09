@@ -75,16 +75,6 @@ public struct SyncState {
     internal var allowedOperationModes: Set<OperationMode?> {
         var allowedModes: Set<OperationMode?> = [nil]
 
-        if isHalted {
-            // Halted means no work allowed
-            return allowedModes
-        }
-
-        if !(hasGoodAccountStatus ?? false) {
-            // Bad or unknown account status means no work allowed
-            return allowedModes
-        }
-
         allowedModes.formUnion([.createZone, .createSubscription])
 
         if hasCreatedZone ?? false, hasCreatedSubscription ?? false {

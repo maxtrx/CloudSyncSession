@@ -19,21 +19,7 @@ struct WorkMiddleware: Middleware {
         let event = next(event)
         let newState = session.state
         
-        os_log(
-            "🏁 Running event",
-            log: myLog,
-            type: .info
-        )
-
-        if newState.isHalted,
-           let work = newState.haltedWork {
-            os_log(
-                "🏁 Halted work",
-                log: myLog,
-                type: .info
-            )
-            session.dispatch(event: .workFailure(work, SyncError.sessionIsHalted))
-        } else if let work = newState.currentWork {
+        if let work = newState.currentWork {
             let prevWork = prevState.currentWork
 
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {
