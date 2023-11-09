@@ -199,19 +199,9 @@ public struct SyncState {
         if isHalted {
             operationMode = nil
         }
-        
-        os_log(
-            "🩲 Got here updateOperationMode 1",
-            log: myLog,
-            type: .info
-        )
 
         if operationMode == nil || !preferredOperationModes.contains(operationMode) {
-            os_log(
-                "🩲 Got here updateOperationMode 2",
-                log: myLog,
-                type: .info
-            )
+            os_log("🩲 Got here updateOperationMode: %{public}@", log: myLog, type: .info, String(describing: operationMode))
             operationMode = preferredOperationModes.first ?? nil
         }
     }
