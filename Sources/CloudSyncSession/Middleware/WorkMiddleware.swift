@@ -13,7 +13,10 @@ struct WorkMiddleware: Middleware {
         let event = next(event)
         let newState = session.state
 
-        if let work = newState.currentWork {
+        if newState.isHalted,
+           let work = newState.haltedWork {
+            session.dispatch(event: .workFailure(work, SyncError.sessionIsHalted))
+        } else if let work = newState.currentWork {
             let prevWork = prevState.currentWork
 
             if prevWork?.id != work.id || prevWork?.retryCount != work.retryCount {

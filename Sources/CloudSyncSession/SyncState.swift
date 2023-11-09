@@ -167,6 +167,38 @@ public struct SyncState {
 
         return nil
     }
+    
+    /// The work that is has been halted and should return a failure.
+    ///
+    /// Useful for when a work needs to return a result, even if the session is halted.
+    internal var haltedWork: SyncWork? {
+        switch operationMode {
+        case nil:
+            return nil
+        case .modify:
+            if let operation = modifyQueue.first {
+                return SyncWork.modify(operation)
+            }
+        case .fetchChanges:
+            if let operation = fetchLatestChangesQueue.first {
+                return SyncWork.fetchLatestChanges(operation)
+            }
+        case .fetchRecords:
+            if let operation = fetchRecordsQueue.first {
+                return SyncWork.fetchRecords(operation)
+            }
+        case .createZone:
+            if let operation = createZoneQueue.first {
+                return SyncWork.createZone(operation)
+            }
+        case .createSubscription:
+            if let operation = createSubscriptionQueue.first {
+                return SyncWork.createSubscription(operation)
+            }
+        }
+
+        return nil
+    }
 
     /// Transition to a new operation mode (i.e. fetching, modifying creating a zone or subscription)
     internal mutating func updateOperationMode() {
