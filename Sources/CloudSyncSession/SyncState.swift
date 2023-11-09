@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 /// The state of a session.
 public struct SyncState {
@@ -10,6 +11,11 @@ public struct SyncState {
         case createZone
         case createSubscription
     }
+    
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
 
     /// The queue of modification requests to be handled.
     internal var modifyQueue = [ModifyOperation]()
@@ -148,7 +154,17 @@ public struct SyncState {
                 return SyncWork.modify(operation)
             }
         case .fetchChanges:
+            os_log(
+                "🩲 Got here 1",
+                log: myLog,
+                type: .info
+            )
             if let operation = fetchLatestChangesQueue.first {
+                os_log(
+                    "🩲 Got here 2",
+                    log: myLog,
+                    type: .info
+                )
                 return SyncWork.fetchLatestChanges(operation)
             }
         case .fetchRecords:
