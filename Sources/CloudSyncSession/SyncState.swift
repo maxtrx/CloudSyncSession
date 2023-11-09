@@ -203,6 +203,7 @@ public struct SyncState {
         if operationMode == nil || !preferredOperationModes.contains(operationMode) {
             os_log("🩲 Got here updateOperationMode: %{public}@", log: myLog, type: .info, String(describing: operationMode))
             operationMode = preferredOperationModes.first ?? nil
+            os_log("🩲 Got here updateOperationMode: %{public}@", log: myLog, type: .info, String(describing: operationMode))
         }
     }
 
