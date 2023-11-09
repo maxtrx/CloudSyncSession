@@ -1,5 +1,6 @@
 import CloudKit
 import Foundation
+import os.log
 
 let maxRetryCount = 5
 
@@ -9,10 +10,21 @@ private func getRetryTimeInterval(retryCount: Int) -> TimeInterval {
 
 struct RetryMiddleware: Middleware {
     var session: CloudSyncSession
+    
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
 
     private let dispatchQueue = DispatchQueue(label: "ErrorMiddleware.Dispatch", qos: .userInitiated)
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
+        os_log(
+            "🦊 Retry",
+            log: myLog,
+            type: .info
+        )
+        
         switch event {
         case let .retry(work, error, suggestedInterval):
             let currentRetryCount = work.retryCount

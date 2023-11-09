@@ -1,9 +1,20 @@
 import Foundation
+import os.log
 
 struct SubjectMiddleware: Middleware {
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
+    
     var session: CloudSyncSession
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
+        os_log(
+            "🦊 Subject",
+            log: myLog,
+            type: .info
+        )
         DispatchQueue.main.async {
             switch event {
             case let .workSuccess(work, result):

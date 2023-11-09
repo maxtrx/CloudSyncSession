@@ -1,4 +1,11 @@
+import os.log
+
 public struct ZoneMiddleware: Middleware {
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
+    
     public var session: CloudSyncSession
 
     public init(session: CloudSyncSession) {
@@ -6,6 +13,11 @@ public struct ZoneMiddleware: Middleware {
     }
 
     public func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
+        os_log(
+            "🦊 Zone",
+            log: myLog,
+            type: .info
+        )
         switch event {
         case .start:
             if session.state.hasCreatedZone == nil {
