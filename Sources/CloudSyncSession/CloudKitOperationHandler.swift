@@ -35,6 +35,11 @@ public class CloudKitOperationHandler: OperationHandler {
     let log: OSLog
     let savePolicy: CKModifyRecordsOperation.RecordSavePolicy = .ifServerRecordUnchanged
     let qos: QualityOfService = .userInitiated
+    
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Subject Middleware"
+    )
 
     private let operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -143,8 +148,8 @@ public class CloudKitOperationHandler: OperationHandler {
         
         os_log(
             "🦊 Fetching changes",
-            log: self.log,
-            type: .error
+            log: self.myLog,
+            type: .info
         )
 
         operation.configurationsByRecordZoneID = [zoneID: config]
