@@ -131,7 +131,7 @@ public class CloudSyncSession {
                         "🦊 Got here 1: %{public}@",
                         log: self.myLog,
                         type: .info,
-                        String(describing: middleware)
+                        String(describing: event)
                     )
                     
                     return middleware.run(
