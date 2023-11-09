@@ -75,11 +75,7 @@ public struct SyncState {
     internal var allowedOperationModes: Set<OperationMode?> {
         var allowedModes: Set<OperationMode?> = [nil]
 
-        allowedModes.formUnion([.createZone, .createSubscription])
-
-        if hasCreatedZone ?? false, hasCreatedSubscription ?? false {
-            allowedModes.formUnion([.fetchChanges, .fetchRecords, .modify])
-        }
+        allowedModes.formUnion([.createZone, .createSubscription, .fetchChanges, .fetchRecords, .modify])
 
         return allowedModes
     }
