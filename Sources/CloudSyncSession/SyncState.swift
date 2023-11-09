@@ -143,11 +143,21 @@ public struct SyncState {
     /// The current work that is, or is to be, worked on.
     internal var currentWork: SyncWork? {
         guard allowedOperationModes.contains(operationMode) else {
+            os_log(
+                "🩲 Got here 0",
+                log: myLog,
+                type: .info
+            )
             return nil
         }
 
         switch operationMode {
         case nil:
+            os_log(
+                "🩲 Got here -1",
+                log: myLog,
+                type: .info
+            )
             return nil
         case .modify:
             if let operation = modifyQueue.first {
