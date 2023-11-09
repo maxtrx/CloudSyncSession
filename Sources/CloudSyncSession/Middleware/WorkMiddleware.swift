@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import os.log
 
 private let workDelay = DispatchTimeInterval.milliseconds(60)
 
@@ -7,14 +8,30 @@ struct WorkMiddleware: Middleware {
     var session: CloudSyncSession
 
     private let dispatchQueue = DispatchQueue(label: "WorkMiddleware.Dispatch", qos: .userInitiated)
+    
+    private let myLog = OSLog(
+        subsystem: "com.ryanashcraft.CloudSyncSession",
+        category: "Error Middleware"
+    )
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         let prevState = session.state
         let event = next(event)
         let newState = session.state
+        
+        os_log(
+            "🏁 Running event",
+            log: myLog,
+            type: .info
+        )
 
         if newState.isHalted,
            let work = newState.haltedWork {
+            os_log(
+                "🏁 Halted work",
+                log: myLog,
+                type: .info
+            )
             session.dispatch(event: .workFailure(work, SyncError.sessionIsHalted))
         } else if let work = newState.currentWork {
             let prevWork = prevState.currentWork
