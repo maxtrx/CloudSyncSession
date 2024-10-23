@@ -145,6 +145,8 @@ public class CloudKitOperationHandler: OperationHandler {
 
         operation.recordZoneIDs = [zoneID]
         operation.fetchAllChanges = true
+        
+        os_log("Fetching latest changes", log: self.log, type: .debug)
 
         operation.recordZoneChangeTokensUpdatedBlock = { [weak self] _, newToken, _ in
             guard let self = self else {
