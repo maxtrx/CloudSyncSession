@@ -155,7 +155,7 @@ public class CloudKitOperationHandler: OperationHandler {
                 return
             }
 
-            os_log("Received new change token", log: self.log, type: .debug)
+            os_log("1 Received new change token", log: self.log, type: .debug)
 
             token = newToken
         }
@@ -176,7 +176,7 @@ public class CloudKitOperationHandler: OperationHandler {
             hasMore = newHasMore
 
             if let newToken = newToken {
-                os_log("Received new change token", log: self.log, type: .debug)
+                os_log("2 Received new change token", log: self.log, type: .debug)
 
                 token = newToken
             } else {
