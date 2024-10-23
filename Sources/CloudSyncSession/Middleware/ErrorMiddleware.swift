@@ -68,17 +68,17 @@ struct ErrorMiddleware: Middleware {
                  .constraintViolation,
                  .referenceViolation,
                  .invalidArguments,
-                 .serverRejectedRequest,
                  .resultsTruncated,
                  .batchRequestFailed,
                  .internalError:
-                return .halt(error)
+                return .halt(work, error)
             case .networkUnavailable,
                  .networkFailure,
                  .serviceUnavailable,
                  .zoneBusy,
                  .requestRateLimited,
-                 .serverResponseLost:
+                 .serverResponseLost,
+                 .serverRejectedRequest:
                 var suggestedInterval: TimeInterval?
 
                 if let retryAfter = ckError.userInfo[CKErrorRetryAfterKey] as? NSNumber {
@@ -99,7 +99,7 @@ struct ErrorMiddleware: Middleware {
 
                     return .retry(.fetchLatestChanges(modifiedOperation), error, suggestedInterval)
                 default:
-                    return .halt(error)
+                    return .halt(work, error)
                 }
             case .partialFailure:
                 switch work {
@@ -107,11 +107,11 @@ struct ErrorMiddleware: Middleware {
                     // Supported fetch partial failures: changeTokenExpired
 
                     guard let partialErrors = ckError.partialErrorsByItemID else {
-                        return .halt(error)
+                        return .halt(work, error)
                     }
 
                     guard let error = partialErrors.first?.value as? CKError, partialErrors.count == 1 else {
-                        return .halt(error)
+                        return .halt(work, error)
                     }
 
                     return mapErrorToEvent(error: error, work: work, zoneID: zoneID)
@@ -119,7 +119,7 @@ struct ErrorMiddleware: Middleware {
                     // Supported modify partial failures: batchRequestFailed and serverRecordChanged
 
                     guard let partialErrors = ckError.partialErrorsByItemID as? [CKRecord.ID: Error] else {
-                        return .halt(error)
+                        return .halt(work, error)
                     }
 
                     let recordIDsNotSavedOrDeleted = Set(partialErrors.keys)
@@ -140,7 +140,7 @@ struct ErrorMiddleware: Middleware {
 
                     if !unhandleableErrorsByItemID.isEmpty {
                         // Abort due to unknown error
-                        return .halt(error)
+                        return .halt(work, error)
                     }
 
                     // All IDs for records that are unknown by the container (probably deleted by another client)
@@ -194,7 +194,7 @@ struct ErrorMiddleware: Middleware {
                             type: .error
                         )
 
-                        return .halt(error)
+                        return .halt(work, error)
                     }
 
                     let recordsToSaveWithoutUnknowns = operation.records
@@ -217,12 +217,12 @@ struct ErrorMiddleware: Middleware {
 
                     return .resolveConflict(work, allResolvedRecordsToSave, recordIDsToDeleteWithoutUnknowns)
                 default:
-                    return .halt(error)
+                    return .halt(work, error)
                 }
             case .serverRecordChanged:
                 guard let resolvedConflictToSave = resolveConflict(error: error) else {
                     // If couldn't handle conflict for the records, abort
-                    return .halt(error)
+                    return .halt(work, error)
                 }
 
                 return .resolveConflict(work, [resolvedConflictToSave], [])
@@ -239,12 +239,12 @@ struct ErrorMiddleware: Middleware {
                  .unknownItem,
                  .operationCancelled,
                  .accountTemporarilyUnavailable:
-                return .halt(error)
+                return .halt(work, error)
             @unknown default:
                 return nil
             }
         } else {
-            return .halt(error)
+            return .halt(work, error)
         }
     }
 

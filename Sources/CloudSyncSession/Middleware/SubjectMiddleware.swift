@@ -10,20 +10,54 @@ struct SubjectMiddleware: Middleware {
                 switch result {
                 case let .fetchLatestChanges(response):
                     if case let .fetchLatestChanges(operation) = work {
-                        session.fetchLatestChangesWorkCompletedSubject.send((operation, response))
+                        session.fetchLatestChangesWorkCompletedSubject.send((operation, .success(response)))
                     }
                 case let .fetchRecords(response):
                     if case let .fetchRecords(operation) = work {
-                        session.fetchRecordsWorkCompletedSubject.send((operation, response))
+                        session.fetchRecordsWorkCompletedSubject.send((operation, .success(response)))
                     }
                 case let .modify(response):
                     if case let .modify(operation) = work {
-                        session.modifyWorkCompletedSubject.send((operation, response))
+                        session.modifyWorkCompletedSubject.send((operation, .success(response)))
                     }
                 default:
                     break
                 }
-            case let .halt(error):
+            case let .workFailure(work, error):
+                switch work {
+                case .modify:
+                    if case let .modify(operation) = work {
+                        session.modifyWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                case .fetchLatestChanges:
+                    if case let .fetchLatestChanges(operation) = work {
+                        session.fetchLatestChangesWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                case .fetchRecords:
+                    if case let .fetchRecords(operation) = work {
+                        session.fetchRecordsWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                default:
+                    break
+                }
+            case let .halt(work, error):
+                switch work {
+                case .modify:
+                    if case let .modify(operation) = work {
+                        session.modifyWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                case .fetchLatestChanges:
+                    if case let .fetchLatestChanges(operation) = work {
+                        session.fetchLatestChangesWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                case .fetchRecords:
+                    if case let .fetchRecords(operation) = work {
+                        session.fetchRecordsWorkCompletedSubject.send((operation, .failure(error)))
+                    }
+                default:
+                    break
+                }
+                
                 session.haltedSubject.send(error)
             case let .accountStatusChanged(status):
                 session.accountStatusSubject.send(status)
