@@ -16,6 +16,7 @@ public struct ZoneMiddleware: Middleware {
                 session.dispatch(event: .doWork(SyncWork.createSubscription(CreateSubscriptionOperation(zoneID: session.zoneID))))
             }
         default:
+            logMessage("🔥 2")
             break
         }
 

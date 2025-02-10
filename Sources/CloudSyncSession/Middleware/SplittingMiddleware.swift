@@ -6,6 +6,8 @@ struct SplittingMiddleware: Middleware {
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         switch event {
         case let .doWork(work):
+            logMessage("🔥 8")
+
             switch work {
             case let .modify(operation):
                 if operation.shouldSplit {

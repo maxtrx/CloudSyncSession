@@ -5,6 +5,10 @@ import os.log
 public typealias ConflictResolver = (CKRecord, CKRecord) -> CKRecord?
 public typealias ChangeTokenExpiredResolver = () -> CKServerChangeToken?
 
+public func logMessage(_ message: String) {
+    NotificationCenter.default.post(name: NSNotification.Name.init(rawValue: "logMessage"), object: message)
+}
+
 public struct StopError: Error {}
 
 /// An object that manages a long-lived series of CloudKit syncing operations.
@@ -99,10 +103,13 @@ public class CloudSyncSession {
 
     /// Queue a fetch operation.
     public func fetch(_ operation: FetchLatestChangesOperation) {
+        logMessage("🔥 1")
         guard state.fetchLatestChangesQueue.allSatisfy({ $0.changeToken != operation.changeToken }) else {
+            logMessage("🔥 1.1")
             return
         }
 
+        logMessage("🔥 1.2")
         dispatch(event: .doWork(.fetchLatestChanges(operation)))
     }
     

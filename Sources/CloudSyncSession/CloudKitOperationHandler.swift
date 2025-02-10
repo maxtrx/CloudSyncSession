@@ -75,6 +75,15 @@ public class CloudKitOperationHandler: OperationHandler {
         self.log = log
         self.logHandler = logHandler
         throttleDuration = Self.minThrottleDuration
+        
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name(rawValue: "logMessage"),
+            object: nil,
+            queue: nil) { notification in
+                if let message = notification.object as? String {
+                    logHandler(message)
+                }
+            }
     }
 
     private func queueOperation(_ operation: Operation) {

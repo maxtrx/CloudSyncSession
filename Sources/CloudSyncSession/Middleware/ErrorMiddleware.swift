@@ -36,6 +36,8 @@ struct ErrorMiddleware: Middleware {
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         switch event {
         case let .workFailure(work, error):
+            logMessage("🔥 7 \(error)")
+
             if let event = mapErrorToEvent(error: error, work: work, zoneID: session.zoneID) {
                 return next(event)
             }

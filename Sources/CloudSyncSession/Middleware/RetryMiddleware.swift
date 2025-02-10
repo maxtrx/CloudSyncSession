@@ -13,8 +13,12 @@ struct RetryMiddleware: Middleware {
     private let dispatchQueue = DispatchQueue(label: "ErrorMiddleware.Dispatch", qos: .userInitiated)
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
+        logMessage("🔥 6")
+
         switch event {
         case let .retry(work, error, suggestedInterval):
+            logMessage("🔥 6.1")
+
             let currentRetryCount = work.retryCount
 
             if currentRetryCount + 1 > maxRetryCount {
@@ -35,6 +39,8 @@ struct RetryMiddleware: Middleware {
 
             return next(event)
         default:
+            logMessage("🔥 6.2")
+
             return next(event)
         }
     }
