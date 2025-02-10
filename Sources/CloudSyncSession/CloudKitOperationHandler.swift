@@ -35,6 +35,7 @@ public class CloudKitOperationHandler: OperationHandler {
     let log: OSLog
     let savePolicy: CKModifyRecordsOperation.RecordSavePolicy = .ifServerRecordUnchanged
     let qos: QualityOfService = .userInitiated
+    let logHandler: (String) -> ()
 
     private let operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -67,11 +68,12 @@ public class CloudKitOperationHandler: OperationHandler {
 
     var lastOperationTime: DispatchTime?
 
-    public init(database: CKDatabase, zoneID: CKRecordZone.ID, subscriptionID: String, log: OSLog) {
+    public init(database: CKDatabase, zoneID: CKRecordZone.ID, subscriptionID: String, log: OSLog, logHandler: @escaping (String) -> ()) {
         self.database = database
         self.zoneID = zoneID
         self.subscriptionID = subscriptionID
         self.log = log
+        self.logHandler = logHandler
         throttleDuration = Self.minThrottleDuration
     }
 
@@ -128,6 +130,7 @@ public class CloudKitOperationHandler: OperationHandler {
     }
 
     public func handle(fetchOperation: FetchLatestChangesOperation, completion: @escaping (Result<FetchLatestChangesOperation.Response, Error>) -> Void) {
+        logHandler("🔥 Got here 1")
         var hasMore = false
         var token: CKServerChangeToken? = fetchOperation.changeToken
         var changedRecords: [CKRecord] = []
@@ -140,22 +143,30 @@ public class CloudKitOperationHandler: OperationHandler {
             resultsLimit: nil,
             desiredKeys: nil
         )
-
+        
         operation.configurationsByRecordZoneID = [zoneID: config]
 
         operation.recordZoneIDs = [zoneID]
         operation.fetchAllChanges = true
         
+        logHandler("🔥 Got here 1.1")
+                
         os_log("Fetching latest changes", log: self.log, type: .debug)
 
         operation.recordZoneChangeTokensUpdatedBlock = { [weak self] _, newToken, _ in
+            self?.logHandler("🔥 Got here 2")
+
             guard let self = self else {
                 return
             }
+            
+            self.logHandler("🔥 Got here 2.1")
 
             guard let newToken = newToken else {
                 return
             }
+            
+            self.logHandler("🔥 Got here 2.2")
 
             os_log("1 Received new change token", log: self.log, type: .debug)
 
@@ -163,35 +174,46 @@ public class CloudKitOperationHandler: OperationHandler {
         }
 
         operation.recordChangedBlock = { record in
+            self.logHandler("🔥 Got here 3")
             changedRecords.append(record)
         }
 
         operation.recordWithIDWasDeletedBlock = { recordID, _ in
+            self.logHandler("🔥 Got here 4")
             deletedRecordIDs.append(recordID)
         }
 
         operation.recordZoneFetchCompletionBlock = { [weak self] _, newToken, _, newHasMore, _ in
+            self?.logHandler("🔥 Got here 5")
             guard let self = self else {
                 return
             }
+            
+            self.logHandler("🔥 Got here 5.1")
 
             hasMore = newHasMore
 
             if let newToken = newToken {
                 os_log("2 Received new change token", log: self.log, type: .debug)
-
+                self.logHandler("🔥 Got here 5.2")
                 token = newToken
             } else {
                 os_log("Confusingly received nil token", log: self.log, type: .debug)
-
+                self.logHandler("🔥 Got here 5.3")
                 token = nil
             }
         }
+        
+        logHandler("🔥 Got here 1.2")
 
         operation.fetchRecordZoneChangesCompletionBlock = { [weak self] error in
+            self?.logHandler("🔥 Got here 6")
+
             guard let self = self else {
                 return
             }
+            
+            self.logHandler("🔥 Got here 6.1")
 
             if let error = error {
                 os_log(
@@ -205,6 +227,8 @@ public class CloudKitOperationHandler: OperationHandler {
                     // Use the suggested retry delay, or exponentially increase throttle duration if not provided
                     self.throttleDuration = min(Self.maxThrottleDuration, ckError.retryAfterSeconds ?? (self.throttleDuration * 2))
                 }
+                
+                self.logHandler("🔥 Got here 6.2 \(error)")
 
                 completion(.failure(error))
             } else {
@@ -212,6 +236,8 @@ public class CloudKitOperationHandler: OperationHandler {
 
                 // On success, back off of the throttle duration by 66%. Backing off too quickly can result in thrashing.
                 self.throttleDuration = max(Self.minThrottleDuration, self.throttleDuration * 2 / 3)
+                
+                self.logHandler("🔥 Got here 6.3")
 
                 completion(
                     .success(
@@ -228,6 +254,8 @@ public class CloudKitOperationHandler: OperationHandler {
 
         operation.qualityOfService = qos
         operation.database = database
+        
+        logHandler("🔥 Got here 1.3")
 
         queueOperation(operation)
     }
