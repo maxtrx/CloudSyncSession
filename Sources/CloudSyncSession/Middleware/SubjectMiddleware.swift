@@ -5,19 +5,15 @@ struct SubjectMiddleware: Middleware {
     var session: CloudSyncSession
 
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
-        logMessage("🔥 4")
-
         DispatchQueue.main.async {
             switch event {
             case let .workSuccess(work, result):
-                logMessage("🔥 4.1")
-
                 switch result {
                 case let .fetchLatestChanges(response):
-                    logMessage("🔥 4.2")
+                    logMessage("🔥 fetch changes success")
 
                     if case let .fetchLatestChanges(operation) = work {
-                        logMessage("🔥 4.3")
+                        logMessage("🔥 fetch changes success 2")
 
                         session.fetchLatestChangesWorkCompletedSubject.send((operation, .success(response)))
                     }
@@ -33,7 +29,7 @@ struct SubjectMiddleware: Middleware {
                     break
                 }
             case let .workFailure(work, error):
-                logMessage("🔥 4.4 \(error)")
+                logMessage("🔥 SubjectMiddleware \(error)")
 
                 switch work {
                 case .modify:
@@ -41,10 +37,10 @@ struct SubjectMiddleware: Middleware {
                         session.modifyWorkCompletedSubject.send((operation, .failure(error)))
                     }
                 case .fetchLatestChanges:
-                    logMessage("🔥 4.5 \(error)")
+                    logMessage("🔥 SubjectMiddleware changes \(error)")
 
                     if case let .fetchLatestChanges(operation) = work {
-                        logMessage("🔥 4.6 \(error)")
+                        logMessage("🔥 SubjectMiddleware changes \(error)")
 
                         session.fetchLatestChangesWorkCompletedSubject.send((operation, .failure(error)))
                     }
@@ -56,7 +52,7 @@ struct SubjectMiddleware: Middleware {
                     break
                 }
             case let .halt(work, error):
-                logMessage("🔥 4.7 \(error)")
+                logMessage("🔥 SubjectMiddleware halt \(error)")
 
                 switch work {
                 case .modify:
@@ -64,10 +60,10 @@ struct SubjectMiddleware: Middleware {
                         session.modifyWorkCompletedSubject.send((operation, .failure(error)))
                     }
                 case .fetchLatestChanges:
-                    logMessage("🔥 4.8 \(error)")
+                    logMessage("🔥 SubjectMiddleware halt 2 \(error)")
 
                     if case let .fetchLatestChanges(operation) = work {
-                        logMessage("🔥 4.9 \(error)")
+                        logMessage("🔥 SubjectMiddleware halt 3 \(error)")
 
                         session.fetchLatestChangesWorkCompletedSubject.send((operation, .failure(error)))
                     }
@@ -81,15 +77,15 @@ struct SubjectMiddleware: Middleware {
                 
                 session.haltedSubject.send(error)
             case let .accountStatusChanged(status):
-                logMessage("🔥 4.10")
+                logMessage("🔥 accountStatusChanged")
 
                 session.accountStatusSubject.send(status)
             case .start:
-                logMessage("🔥 4.11")
+                logMessage("🔥 start")
 
                 session.haltedSubject.send(nil)
             case let .resolveConflict(work, _, _):
-                logMessage("🔥 4.12")
+                logMessage("🔥 resolveConflict")
 
                 if case let .modify(failedOperation) = work {
                     session.modifyWorkCompletedSubject.send((failedOperation, .failure(CKError(.partialFailure))))
