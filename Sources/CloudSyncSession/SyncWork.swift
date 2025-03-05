@@ -135,9 +135,15 @@ public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
 
     var changeToken: CKServerChangeToken?
     var retryCount: Int = 0
+    var resultsLimit: Int?
 
-    public init(changeToken: CKServerChangeToken?, parent: (any SyncChainWork<Response>)? = nil) {
+    public init(
+        changeToken: CKServerChangeToken?,
+        resultsLimit: Int? = nil,
+        parent: (any SyncChainWork<Response>)? = nil
+    ) {
         self.changeToken = changeToken
+        self.resultsLimit = resultsLimit
         self.parent = parent
     }
 }

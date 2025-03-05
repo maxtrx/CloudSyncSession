@@ -137,7 +137,7 @@ public class CloudKitOperationHandler: OperationHandler {
 
         let config = CKFetchRecordZoneChangesOperation.ZoneConfiguration(
             previousServerChangeToken: token,
-            resultsLimit: nil,
+            resultsLimit: fetchOperation.resultsLimit,
             desiredKeys: nil
         )
 
