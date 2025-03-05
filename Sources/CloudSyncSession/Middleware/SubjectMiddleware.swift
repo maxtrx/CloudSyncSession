@@ -1,4 +1,5 @@
 import Foundation
+import CloudKit
 
 struct SubjectMiddleware: Middleware {
     var session: CloudSyncSession
@@ -63,6 +64,10 @@ struct SubjectMiddleware: Middleware {
                 session.accountStatusSubject.send(status)
             case .start:
                 session.haltedSubject.send(nil)
+            case let .resolveConflict(work, _, _):
+                if case let .modify(failedOperation) = work {
+                    session.modifyWorkCompletedSubject.send((failedOperation, .failure(CKError(.partialFailure))))
+                }
             default:
                 break
             }
