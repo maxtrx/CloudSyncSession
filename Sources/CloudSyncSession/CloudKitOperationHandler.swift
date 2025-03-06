@@ -144,7 +144,7 @@ public class CloudKitOperationHandler: OperationHandler {
         operation.configurationsByRecordZoneID = [zoneID: config]
 
         operation.recordZoneIDs = [zoneID]
-        operation.fetchAllChanges = true
+        operation.fetchAllChanges = false
         
         os_log("Fetching latest changes", log: self.log, type: .debug)
 
