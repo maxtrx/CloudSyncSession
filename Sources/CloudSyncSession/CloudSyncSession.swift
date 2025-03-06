@@ -100,6 +100,7 @@ public class CloudSyncSession {
     /// Queue a fetch operation.
     public func fetch(_ operation: FetchLatestChangesOperation) {
         guard state.fetchLatestChangesQueue.allSatisfy({ $0.changeToken != operation.changeToken }) else {
+            dispatch(event: .workFailure(.fetchLatestChanges(operation), SyncError.changeTokenAlreadyInUse))
             return
         }
 
