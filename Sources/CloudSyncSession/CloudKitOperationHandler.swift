@@ -146,7 +146,7 @@ public class CloudKitOperationHandler: OperationHandler {
         operation.recordZoneIDs = [zoneID]
         operation.fetchAllChanges = false
         
-        os_log("Fetching latest changes", log: self.log, type: .debug)
+        os_log("🔥 Fetching latest changes", log: self.log, type: .debug)
 
         operation.recordZoneChangeTokensUpdatedBlock = { [weak self] _, newToken, _ in
             guard let self = self else {
@@ -157,7 +157,7 @@ public class CloudKitOperationHandler: OperationHandler {
                 return
             }
 
-            os_log("1 Received new change token", log: self.log, type: .debug)
+            os_log("🔥 1 Received new change token", log: self.log, type: .debug)
 
             token = newToken
         }
@@ -175,14 +175,20 @@ public class CloudKitOperationHandler: OperationHandler {
                 return
             }
 
+            os_log(
+                "🔥 recordZoneFetchCompletionBlock: %{public}@",
+                log: self.log,
+                type: .info,
+                String(newHasMore)
+            )
             hasMore = newHasMore
 
             if let newToken = newToken {
-                os_log("2 Received new change token", log: self.log, type: .debug)
+                os_log("🔥 2 Received new change token", log: self.log, type: .debug)
 
                 token = newToken
             } else {
-                os_log("Confusingly received nil token", log: self.log, type: .debug)
+                os_log("🔥 Confusingly received nil token", log: self.log, type: .debug)
 
                 token = nil
             }
@@ -192,10 +198,12 @@ public class CloudKitOperationHandler: OperationHandler {
             guard let self = self else {
                 return
             }
+            
+            os_log("🔥 fetchRecordZoneChangesCompletionBlock", log: self.log, type: .debug)
 
             if let error = error {
                 os_log(
-                    "Failed to fetch record zone changes: %{public}@",
+                    "🔥 Failed to fetch record zone changes: %{public}@",
                     log: self.log,
                     type: .error,
                     String(describing: error)
@@ -208,7 +216,7 @@ public class CloudKitOperationHandler: OperationHandler {
 
                 completion(.failure(error))
             } else {
-                os_log("Finished fetching record zone changes", log: self.log, type: .info)
+                os_log("🔥 Finished fetching record zone changes", log: self.log, type: .info)
 
                 // On success, back off of the throttle duration by 66%. Backing off too quickly can result in thrashing.
                 self.throttleDuration = max(Self.minThrottleDuration, self.throttleDuration * 2 / 3)
