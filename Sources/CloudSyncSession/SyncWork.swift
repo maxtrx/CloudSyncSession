@@ -127,6 +127,7 @@ public struct FetchLatestChangesOperation: Identifiable, SyncOperation {
         public let changedRecords: [CKRecord]
         public let deletedRecordIDs: [CKRecord.ID]
         public let hasMore: Bool
+        public let resultsLimit: Int?
     }
 
     public let id = UUID()

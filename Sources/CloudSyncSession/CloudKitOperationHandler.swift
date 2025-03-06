@@ -219,7 +219,8 @@ public class CloudKitOperationHandler: OperationHandler {
                             changeToken: token,
                             changedRecords: changedRecords,
                             deletedRecordIDs: deletedRecordIDs,
-                            hasMore: hasMore
+                            hasMore: hasMore,
+                            resultsLimit: fetchOperation.resultsLimit
                         )
                     )
                 )

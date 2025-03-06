@@ -272,7 +272,7 @@ public struct SyncState {
             switch result {
             case let .fetchLatestChanges(response):
                 if response.hasMore {
-                    state.prioritizeWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: response.changeToken)))
+                    state.prioritizeWork(.fetchLatestChanges(FetchLatestChangesOperation(changeToken: response.changeToken, resultsLimit: response.resultsLimit)))
                 }
             case let .createZone(didCreateZone):
                 state.hasCreatedZone = didCreateZone
