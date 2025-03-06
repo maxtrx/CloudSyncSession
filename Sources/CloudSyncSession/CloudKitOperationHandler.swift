@@ -217,6 +217,12 @@ public class CloudKitOperationHandler: OperationHandler {
                 completion(.failure(error))
             } else {
                 os_log("🔥 Finished fetching record zone changes", log: self.log, type: .info)
+                os_log(
+                    "🔥 Changed records: %{public}@",
+                    log: self.log,
+                    type: .error,
+                    String(changedRecords.count)
+                )
 
                 // On success, back off of the throttle duration by 66%. Backing off too quickly can result in thrashing.
                 self.throttleDuration = max(Self.minThrottleDuration, self.throttleDuration * 2 / 3)
