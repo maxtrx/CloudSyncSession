@@ -36,7 +36,9 @@ struct ErrorMiddleware: Middleware {
     func run(next: (SyncEvent) -> SyncEvent, event: SyncEvent) -> SyncEvent {
         switch event {
         case let .workFailure(work, error):
-            if let event = mapErrorToEvent(error: error, work: work, zoneID: session.zoneID) {
+            if error is SyncError {
+                return next(event)
+            } else if let event = mapErrorToEvent(error: error, work: work, zoneID: session.zoneID) {
                 return next(event)
             }
 
