@@ -137,14 +137,14 @@ public class CloudKitOperationHandler: OperationHandler {
 
         let config = CKFetchRecordZoneChangesOperation.ZoneConfiguration(
             previousServerChangeToken: token,
-            resultsLimit: nil,
+            resultsLimit: fetchOperation.resultsLimit,
             desiredKeys: nil
         )
 
         operation.configurationsByRecordZoneID = [zoneID: config]
 
         operation.recordZoneIDs = [zoneID]
-        operation.fetchAllChanges = true
+        operation.fetchAllChanges = false
         
         os_log("Fetching latest changes", log: self.log, type: .debug)
 
@@ -219,7 +219,8 @@ public class CloudKitOperationHandler: OperationHandler {
                             changeToken: token,
                             changedRecords: changedRecords,
                             deletedRecordIDs: deletedRecordIDs,
-                            hasMore: hasMore
+                            hasMore: hasMore,
+                            resultsLimit: fetchOperation.resultsLimit
                         )
                     )
                 )
